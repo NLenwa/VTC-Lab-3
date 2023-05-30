@@ -3,17 +3,8 @@
 
 #include "agents.h"
 
-enum transfer_types_2 { MONEY, FUEL };
-extern enum frame_types;
-extern float TransferSending(int ID_receiver, int transfer_type, float transfer_value);
-extern float my_fuel;
-extern float my_price;
-extern int response_count;
-extern float distance_item;
-extern int off_id;
-extern int response_id;
-extern float response_price;
-extern bool is_trade;
+
+
 
 
 AutoPilot::AutoPilot()
@@ -40,7 +31,7 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	float temp2_x;
 	float temp2_y;
 	float dist2;
-	int tracked_item;
+
 	distance_item = sqrtf(pow((my_pos_x - temp_x), 2) + pow((my_pos_y - temp_y), 2));
 
 	for (int i = 1; i <= _terrain->number_of_items; i++)
