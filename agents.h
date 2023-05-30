@@ -13,6 +13,11 @@ int response_id;
 float asking_price;
 float my_price;
 
+// Item location:
+float distance_item;
+float angle_item;
+
+
 class AutoPilot
 {       
 private:
