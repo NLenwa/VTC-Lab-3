@@ -2,6 +2,7 @@
 #include <time.h>
 
 #include "agents.h"
+#include "main.cpp"
 
 
 AutoPilot::AutoPilot()
@@ -20,6 +21,44 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	// .................................................................
 	// .................................................................
 
+
+
+
+
+
+	// BUY / SELL control code
+	// when fuel if low, then ask to trade
+	my_fuel = my_vehicle->state.amount_of_fuel;
+	if (my_fuel < 10)
+	{
+		AskForFuel();
+	}
+	// when trade was initiated and have enough fuel for trade, then set selling price
+	if (is_trade && my_vehicle->iID != off_id)
+	{
+		if (my_fuel > 40)
+		{
+			my_price = 100;
+		}
+		else if (my_fuel >= 15)
+		{
+			my_price = 10 * (100 - my_fuel);
+		}
+		ReplyForTrade(off_id, my_price);
+	}
+
+	// agree to deal and transfer payment
+	// 1 for testing purposes, change for:
+	//	(network_vehicles.size() / 10)
+	if (response_count >= 1 || response_price == 100)
+	{
+		if (my_vehicle->state.money >= response_price)
+		{
+			TransferSending(response_id, MONEY, response_price);
+			TradeAgree(response_id);
+		}
+	}
+	// ************************
 }
 
 void AutoPilot::ControlTest(MovableObject *_ob, float krok_czasowy, float czas_proby)

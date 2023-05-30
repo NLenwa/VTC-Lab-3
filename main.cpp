@@ -70,7 +70,7 @@ float autopilot_test_time = 600;              // całkowity czas testu
 extern float TransferSending(int ID_receiver, int transfer_type, float transfer_value);
 
 enum frame_types {
-	OBJECT_STATE, ITEM_TAKING, ITEM_RENEWAL, COLLISION, TRANSFER
+	OBJECT_STATE, ITEM_TAKING, ITEM_RENEWAL, COLLISION, TRANSFER, TRADE, TRADEASK, TRADEEND
 };
 
 enum transfer_types { MONEY, FUEL};
@@ -94,6 +94,39 @@ struct Frame
 	long existing_time;        // czas jaki uplyn¹³ od uruchomienia programu
 };
 
+// Trade offer functions:
+void AskForFuel()
+{
+	Frame frame;
+	frame.iID = my_vehicle->iID;	// Provide ID for identification
+	frame.frame_type = TRADEASK;	// Frame type for initialization of trade offer
+	frame.transfer_type = FUEL;		// Asking for fuel donation
+	frame.transfer_value = 100;		// Initial price for 10 units of fuel
+
+	multi_send->send((char*)&frame, sizeof(Frame));
+}
+
+void ReplyForTrade(int rec_id, float price)
+{
+	Frame frame;
+	frame.iID = my_vehicle->iID;
+	frame.frame_type = TRADE;
+	frame.iID_receiver = rec_id;
+	frame.transfer_value = price;
+
+	multi_send->send((char*)&frame, sizeof(Frame));
+}
+
+void TradeAgree(int rec_id)
+{
+	Frame frame;
+	frame.iID = my_vehicle->iID;
+	frame.frame_type = TRADEEND;
+	frame.iID_receiver = rec_id;
+
+	multi_send->send((char*)&frame, sizeof(Frame));
+}
+// **************************
 
 //******************************************
 // Funkcja obs³ugi w¹tku odbioru komunikatów 
@@ -188,7 +221,44 @@ DWORD WINAPI ReceiveThreadFunction(void *ptr)
 			}
 			break;
 		}
-		
+		// AskForFuel frame case:
+		case TRADEASK:
+		{
+			is_trade = true;
+			if (frame.iID != my_vehicle->iID)
+			{
+				off_id = frame.iID;
+			}
+			break;
+		}
+		// Receive new fuel price proposition:
+		case TRADE:
+		{
+			if (frame.iID_receiver == my_vehicle->iID)
+			{
+				response_count++;								// counter to wait for at least few responses
+				if (frame.transfer_value <= response_price)		// when price is lower than existing one - overwrite
+				{
+					response_price = frame.transfer_value;
+					response_id = frame.iID;
+				}
+			}
+			break;
+		}
+		case TRADEEND:
+		{
+			if (frame.iID_receiver == my_vehicle->iID)
+			{
+				int v_id = frame.iID;
+				float t_fuel = 10;
+				TransferSending(v_id, FUEL, t_fuel);
+			}
+			is_trade = false;
+			response_count = 0;
+			response_price = 1000;
+			break;
+		}
+
 		} // switch po typach ramek
 		// Opuszczenie ścieżki krytycznej / Release the Critical section
 		LeaveCriticalSection(&m_cs);               // wyjście ze ścieżki krytycznej
