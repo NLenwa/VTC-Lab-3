@@ -64,7 +64,7 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	// Driving forward or reverse
 	if (scalar_prod_forward > 0)
 	{
-		obj->F = obj->F_max;
+		obj->F = obj->F_max/1.5;
 	}
 	else 
 	{
@@ -76,22 +76,22 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	// Steering to right, when item is more than 45 degrees to the right
 	if ((vector_angle > 0 && vector_angle < (pi / 4)) || (vector_angle > (7 * pi / 4) && vector_angle < (2 * pi)))
 	{
-		obj->wheel_turn_speed = 0.5;
+		obj->wheel_turn_speed = 0.3;
 	}
 	// Sterring to left, when item is more than 45 degrees to the left
 	else if ((vector_angle > (3 * pi / 4) && vector_angle < (5 * pi / 4)))
 	{
-		obj->state.wheel_turn_angle = 0.5 * (vector_angle - (pi / 2)) / (pi / 4);
+		obj->wheel_turn_speed = -0.3;
 	}
 	// When item is behind <-45; 45> degrees
 	else if (vector_angle >= (5 * pi / 4) && vector_angle <= (7 * pi / 4))
 	{
-		obj->wheel_turn_speed = -0.5 * (vector_angle - (3 * pi / 2)) / (pi / 4);
+		obj->wheel_turn_speed = -0.3 * (vector_angle - (3 * pi / 2)) / (pi / 4);
 	}
 	// When item is in front <-45; 45> degrees
 	else if (vector_angle >= (pi / 4) && vector_angle <= (3 * pi / 4))
 	{
-		obj->wheel_turn_speed = 
+		obj->wheel_turn_speed = 0.3 * (vector_angle - (pi / 2)) / (pi / 4);
 	}
 
 
