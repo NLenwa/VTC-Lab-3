@@ -22,8 +22,8 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	// .................................................................
 
 	// Finding closest item for pick up
-	float my_pos_x = my_vehicle->state.vPos.x;
-	float my_pos_y = my_vehicle->state.vPos.y;
+	float my_pos_x = obj->state.vPos.x;
+	float my_pos_y = obj->state.vPos.y;
 	float temp_x = _terrain->p[0].vPos.x;
 	float temp_y = _terrain->p[0].vPos.y;
 	float temp2_x;
@@ -43,7 +43,7 @@ void AutoPilot::AutoControl(MovableObject *obj)
 		{
 			// If item is of type FUEL or MONEY (worth 100) and can be picked-up
 			if (_terrain->p[i].to_take == 1 && 
-				((_terrain->p[i].type == MONEY && _terrain->p->value == 100) || _terrain->p[i].type == FUEL))
+				( _terrain->p[i].type == MONEY || _terrain->p[i].type == FUEL ))
 			{
 				temp_x = temp2_x;
 				temp_y = temp2_y;
@@ -62,11 +62,11 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	// Driving forward or reverse
 	if (scalar_prod_forward > 0)
 	{
-		my_vehicle->F = my_vehicle->F_max;
+		obj->F = obj->F_max;
 	}
 	else 
 	{
-		my_vehicle->F = - (my_vehicle->F_max)/2;
+		obj->F = - (obj->F_max)/2;
 	}
 	// Steering left - right
 	float vector_angle = angle_between_vectors2D(vect_local_forward, vector_item);
@@ -74,35 +74,35 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	// Steering to right, when item is more than 45 degrees to the right
 	if ((vector_angle > 0 && vector_angle < (pi / 4)) || (vector_angle > (7 * pi / 4) && vector_angle < (2 * pi)))
 	{
-		my_vehicle->state.wheel_turn_angle = -45 / 180;
+		obj->state.wheel_turn_angle = -45 / 180;
 	}
 	// Sterring to left, when item is more than 45 degrees to the left
 	else if ((vector_angle > (3 * pi / 4) && vector_angle < (5 * pi / 4)))
 	{
-		my_vehicle->state.wheel_turn_angle = 45 / 180;
+		obj->state.wheel_turn_angle = 45 / 180;
 	}
 	// When item is behind <-45; 45> degrees
 	else if (vector_angle >= (5 * pi / 4) && vector_angle <= (7 * pi / 4))
 	{
-		my_vehicle->state.wheel_turn_angle = pi - vector_angle;
+		obj->state.wheel_turn_angle = pi - vector_angle;
 	}
 	// When item is in front <-45; 45> degrees
 	else if (vector_angle >= (pi / 4) && vector_angle <= (3 * pi / 4))
 	{
-		my_vehicle->state.wheel_turn_angle = vector_angle;
+		obj->state.wheel_turn_angle = vector_angle;
 	}
 
 
 
 	// BUY / SELL control code
 	// when fuel if low, then ask to trade
-	my_fuel = my_vehicle->state.amount_of_fuel;
+	my_fuel = obj->state.amount_of_fuel;
 	if (my_fuel < 10)
 	{
 		AskForFuel();
 	}
 	// when trade was initiated and have enough fuel for trade, then set selling price
-	if (is_trade && my_vehicle->iID != off_id)
+	if (is_trade && obj->iID != off_id)
 	{
 		if (my_fuel > 40)
 		{
@@ -120,7 +120,8 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	//	(network_vehicles.size() / 10)
 	if (response_count >= 1 || response_price == 100)
 	{
-		if (my_vehicle->state.money >= response_price)
+		if (obj->state.money >= response_price)
+		if (obj->state.money >= response_price)
 		{
 			TransferSending(response_id, MONEY, response_price);
 			TradeAgree(response_id);
