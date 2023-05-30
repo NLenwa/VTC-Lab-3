@@ -66,7 +66,7 @@ void AutoPilot::AutoControl(MovableObject *obj)
 	}
 	else 
 	{
-		my_vehicle->F = - (my_vehicle->F_max);
+		my_vehicle->F = - (my_vehicle->F_max)/2;
 	}
 	// Steering left - right
 	float vector_angle = angle_between_vectors2D(vect_local_forward, vector_item);
