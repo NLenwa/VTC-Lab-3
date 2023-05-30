@@ -19,6 +19,21 @@ using namespace std;
 #include "graphics.h"
 #include "net.h"
 
+// Sell, buy variables
+bool is_trade = false;
+float response_price = 1000;
+int response_count = 0;
+
+float my_fuel;
+int off_id;
+int response_id;
+float asking_price;
+float my_price;
+
+// Item location:
+float distance_item;
+float angle_item;
+
 
 bool if_different_skills = false;          // czy zró¿nicowanie umiejêtnoœci (dla ka¿dego pojazdu losowane s¹ umiejêtnoœci
 // zbierania gotówki i paliwa)

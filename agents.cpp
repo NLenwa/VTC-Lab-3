@@ -2,7 +2,18 @@
 #include <time.h>
 
 #include "agents.h"
-#include "main.cpp"
+
+enum transfer_types_2 { MONEY, FUEL };
+extern enum frame_types;
+extern float TransferSending(int ID_receiver, int transfer_type, float transfer_value);
+extern float my_fuel;
+extern float my_price;
+extern int response_count;
+extern float distance_item;
+extern int off_id;
+extern int response_id;
+extern float response_price;
+extern bool is_trade;
 
 
 AutoPilot::AutoPilot()

@@ -2,20 +2,11 @@
 #include "objects.h"
 #endif
 
-// Sell, buy variables
-bool is_trade = false;
-float response_price = 1000;
-int response_count = 0;
 
-float my_fuel;
-int off_id;
-int response_id;
-float asking_price;
-float my_price;
 
-// Item location:
-float distance_item;
-float angle_item;
+extern void AskForFuel();
+extern void ReplyForTrade(int rec_id, float price);
+extern void TradeAgree(int rec_id);
 
 
 class AutoPilot
